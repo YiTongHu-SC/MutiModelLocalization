@@ -120,7 +120,7 @@ class DeepSeekTranslator(BaseTranslator):
 
     def __init__(self, config: LocalizationConfig):
         super().__init__(config)
-        self.client = Ark(base_url=self.base_url, api_key=self.api_key)
+        self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
 
     def translate_text(self, text: str, target_lang: str, style: str = None) -> str:
         super().translate_text(text, target_lang, style)
@@ -162,7 +162,7 @@ class TranslatorFactory:
     def create_translator(config: LocalizationConfig) -> BaseTranslator:
         model_type = config.get_config("model_type", "Doubao")
 
-        translators = {"Doubao": DoubaoTranslator}
+        translators = {"Doubao": DoubaoTranslator, "DeepSeek": DeepSeekTranslator}
 
         if model_type not in translators:
             raise ValueError(f"Unsupported model type: {model_type}")
