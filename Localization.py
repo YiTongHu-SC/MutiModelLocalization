@@ -7,6 +7,7 @@ import argparse
 import time
 from time import sleep
 from volcenginesdkarkruntime import Ark
+from openai import OpenAI
 
 
 class LocalizationConfig:
@@ -88,10 +89,6 @@ class DoubaoTranslator(BaseTranslator):
             ],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
-            "translation_config": {
-                "formal_level": style or self.default_style,
-                "domain": "software",
-            },
         }
 
         try:
@@ -107,8 +104,50 @@ class DoubaoTranslator(BaseTranslator):
 
             # 解析豆包API响应格式
             return completion.choices[0].message.content
-        except requests.exceptions.HTTPError as e:
-            print(f"API Error: {e.response.status_code} - {e.response.text}")
+        except KeyError:
+            print("Invalid API response format")
+        except Exception as e:
+            print(f"Translation failed: {str(e)}")
+
+        self.last_request = time.time()
+        return ""  # 失败时返回原文
+
+
+class DeepSeekTranslator(BaseTranslator):
+    """
+    DeepSeek大模型
+    """
+
+    def __init__(self, config: LocalizationConfig):
+        super().__init__(config)
+        self.client = Ark(base_url=self.base_url, api_key=self.api_key)
+
+    def translate_text(self, text: str, target_lang: str, style: str = None) -> str:
+        super().translate_text(text, target_lang, style)
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"你是一名专业游戏本地化翻译员，仅将以下文本直接翻译为{target_lang}，输出无额外内容，限定游戏场景，只输出一个候选: {text}",
+                }
+            ],
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+
+        try:
+            completion = self.client.chat.completions.create(
+                model=payload["model"],
+                messages=payload["messages"],
+                max_tokens=payload["max_tokens"],
+                temperature=payload["temperature"],
+                stream=False,
+            )
+            self.last_request = time.time()
+
+            # 解析豆包API响应格式
+            return completion.choices[0].message.content
         except KeyError:
             print("Invalid API response format")
         except Exception as e:
@@ -149,7 +188,7 @@ class LocalizationProcessor:
                 return self.config.translation_cache[cache_key]
 
             translated = self.translator.translate_text(value, target_lang, style)
-            if not translated:
+            if translated.strip():
                 self.config.translation_cache[cache_key] = translated
             return translated
         return value

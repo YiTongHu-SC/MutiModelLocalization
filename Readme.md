@@ -6,7 +6,7 @@
 
 - 支持豆包等大模型翻译接口
 - JSON格式文件本地化处理
-- 翻译结果缓存机制
+- 翻译结果缓存机制，避免重复翻译
 - 可配置的翻译风格（正式/口语化）
 - 多语言批量生成
 - API请求频率控制
@@ -26,7 +26,9 @@ pip install pyyaml volcenginesdkarkruntime
 
 ```yaml
 
-base_url: "https://ark.cn-beijing.volces.com/api/v3"  # API端点
+model_type: Doubao
+model: "youer-model-name"
+base_url: "https://example/api"  # API端口
 api_key: "your-api-key-here"  # 替换为真实API密钥
 default_languages:  # 目标语言列表
   - en
@@ -34,6 +36,13 @@ default_languages:  # 目标语言列表
   - fr
 cache_path: "translations.cache"  # 翻译缓存文件路径
 
+```
+
+可选的 model_type
+
+``` yaml
+model_type: Doubao # 豆包
+model_type: DeepSeek
 ```
 
 ## 🚀 快速使用
