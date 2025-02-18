@@ -34,7 +34,11 @@ default_languages:  # 目标语言列表
   - en
   - ja
   - fr
-cache_path: "translations.cache"  # 翻译缓存文件路径
+cache_path: output/translations.cache  # 翻译缓存文件路径
+translation_style: formal # 默认翻译风格
+rate_limit: 3
+temperature: 0.1
+max_tokens: 1024
 
 ```
 
