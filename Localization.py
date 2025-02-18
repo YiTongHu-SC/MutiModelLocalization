@@ -113,9 +113,9 @@ class DoubaoTranslator(BaseTranslator):
         return ""  # 失败时返回原文
 
 
-class DeepSeekTranslator(BaseTranslator):
+class OpenAIBaseedTranslator(BaseTranslator):
     """
-    DeepSeek大模型
+    基于OpenAI SDK的大模型，支持DeepSeek、Kimi
     """
 
     def __init__(self, config: LocalizationConfig):
@@ -162,7 +162,11 @@ class TranslatorFactory:
     def create_translator(config: LocalizationConfig) -> BaseTranslator:
         model_type = config.get_config("model_type", "Doubao")
 
-        translators = {"Doubao": DoubaoTranslator, "DeepSeek": DeepSeekTranslator}
+        translators = {
+            "Doubao": DoubaoTranslator,
+            "DeepSeek": OpenAIBaseedTranslator,
+            "Kimi": OpenAIBaseedTranslator,
+        }
 
         if model_type not in translators:
             raise ValueError(f"Unsupported model type: {model_type}")
