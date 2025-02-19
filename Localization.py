@@ -166,6 +166,7 @@ class TranslatorFactory:
             "Doubao": DoubaoTranslator,
             "DeepSeek": OpenAIBaseedTranslator,
             "Kimi": OpenAIBaseedTranslator,
+            "TongYi": OpenAIBaseedTranslator,
         }
 
         if model_type not in translators:
