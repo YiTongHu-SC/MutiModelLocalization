@@ -83,9 +83,13 @@ class DoubaoTranslator(BaseTranslator):
             "model": self.model,
             "messages": [
                 {
+                    "role": "system",
+                    "content": self.config.get_config("system_prompt"),
+                },
+                {
                     "role": "user",
-                    "content": f"你是一名专业游戏本地化翻译员，仅将以下文本直接翻译为{target_lang}，输出无额外内容，限定游戏场景，只输出一个候选: {text}",
-                }
+                    "content": f"将以下文本直接翻译为{target_lang}: {text}",
+                },
             ],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
@@ -162,7 +166,7 @@ class TongYiQwenTranslator(BaseTranslator):
 
 class OpenAIBaseedTranslator(BaseTranslator):
     """
-    基于OpenAI SDK的大模型，支持DeepSeek、Kimi
+    基于OpenAI SDK的大模型,支持DeepSeek、Kimi,等
     """
 
     def __init__(self, config: LocalizationConfig):
@@ -175,9 +179,13 @@ class OpenAIBaseedTranslator(BaseTranslator):
             "model": self.model,
             "messages": [
                 {
+                    "role": "system",
+                    "content": self.config.get_config("system_prompt"),
+                },
+                {
                     "role": "user",
-                    "content": f"你是一名专业游戏本地化翻译员，仅将以下文本直接翻译为{target_lang}，输出无额外内容，限定游戏场景，只输出一个候选: {text}",
-                }
+                    "content": f"将以下文本直接翻译为{target_lang}: {text}",
+                },
             ],
             "temperature": self.temperature,
             "max_tokens": self.max_tokens,
