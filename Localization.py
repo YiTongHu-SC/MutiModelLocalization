@@ -60,7 +60,9 @@ class BaseTranslator:
     def _generate_hash_key(self, text: str, target_lang: str, style: str) -> str:
         return hashlib.md5(f"{text}_{target_lang}_{style}".encode()).hexdigest()
 
-    def translate_text(self, text: str, target_lang: str, style: str) -> str:
+    def translate_text(
+        self, text: str, target_lang: str, style: str, comment: str
+    ) -> str:
         # 限流控制
         elapsed = time.time() - self.last_request
         if elapsed < 1 / self.rate_limit:
@@ -77,18 +79,21 @@ class DoubaoTranslator(BaseTranslator):
         super().__init__(config)
         self.client = Ark(base_url=self.base_url, api_key=self.api_key)
 
-    def translate_text(self, text: str, target_lang: str, style: str = None) -> str:
-        super().translate_text(text, target_lang, style)
+    def translate_text(
+        self, text: str, target_lang: str, style: str = "formal", comment: str = None
+    ) -> str:
+        super().translate_text(text, target_lang, style, comment)
         payload = {
             "model": self.model,
             "messages": [
                 {
                     "role": "system",
-                    "content": self.config.get_config("system_prompt"),
+                    "content": self.config.get_config("system_prompt")
+                    + f" 翻译风格：{style}",
                 },
                 {
                     "role": "user",
-                    "content": f"将以下文本直接翻译为{target_lang}: {text}",
+                    "content": f"基于注释内容：{comment}，将以下文本直接翻译为{target_lang}: {text}",
                 },
             ],
             "temperature": self.temperature,
@@ -236,23 +241,29 @@ class LocalizationProcessor:
         self.config = config
         self.translator = TranslatorFactory.create_translator(config)
 
-    def _process_value(self, value, target_lang: str, style: str):
-        if isinstance(value, dict):
-            return {
-                k: self._process_value(v, target_lang, style) for k, v in value.items()
-            }
-        elif isinstance(value, list):
-            return [self._process_value(item, target_lang, style) for item in value]
-        elif isinstance(value, str):
-            cache_key = self.translator._generate_hash_key(value, target_lang, style)
+    def _process_value(self, value: dict, target_lang: str, style: str):
+        # 遍历字典，输入数据结构示例：
+        # {
+        #   "welcome": {
+        #     "Text": "欢迎使用基于AI大模型的本地化工具",
+        #     "Comment": "工具欢迎语，用于测试"
+        #   }
+        # }
+        #
+        translated = {}
+        for content_key in value.keys():
+            content = value[content_key]
+            cache_key = self.translator._generate_hash_key(content_key, target_lang, style)
             if cache_key in self.config.translation_cache:
-                return self.config.translation_cache[cache_key]
-
-            translated = self.translator.translate_text(value, target_lang, style)
-            if translated.strip():
+                translated[content_key] = self.config.translation_cache[cache_key]
+                continue
+            translated_text = self.translator.translate_text(
+                content["text"], target_lang, style, content["comment"]
+            )
+            if translated_text.strip():
                 self.config.translation_cache[cache_key] = translated
-            return translated
-        return value
+            translated[content_key] = translated_text
+        return translated
 
     def generate_localization(
         self, source_path: str, target_langs: list, output_dir: str, style: str = None
