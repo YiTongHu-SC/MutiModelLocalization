@@ -1,4 +1,8 @@
+<!-- markdownlint-disable MD041 -->
+[中文](./Readme.md) | [English](./Readme.en.md)
+
 # MultiModelLocalization
+<!-- markdownlint-enable MD041 -->
 
 基于大语言模型的本地化工具，支持多语言自动翻译和缓存管理
 
@@ -15,7 +19,7 @@
 ### v-0.0.2
 
 - 新增 Kimi 模型支持,但仍然存在**问题**:
-  - _Kimi API 要求 RPM 不超过 3,所以可能需要打包批量请求_
+  - Kimi API 要求 RPM 不超过 3,所以可能需要打包批量请求_
 
 ### v-0.0.1
 
