@@ -44,6 +44,7 @@ class LocalizationConfig:
 class BaseTranslator:
     def __init__(self, config: LocalizationConfig):
         self.config = config
+        self.use_cache = config.get_config("use_cache", False)
         self.base_url = config.get_config("base_url")
         self.api_key = config.get_config("api_key")
         self.model = config.get_config("model")

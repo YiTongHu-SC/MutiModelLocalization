@@ -49,6 +49,7 @@ class LocalizationProcessor:
     def __init__(self, config: LocalizationConfig):
         self.config = config
         self.translator = TranslatorFactory.create_translator(config)
+        self.use_cache = config.get_config("use_cache", False)
 
     def _process_value(
         self, value: dict, target_lang: str, style: str, is_use_comment: bool
@@ -67,7 +68,7 @@ class LocalizationProcessor:
             cache_key = self.translator._generate_hash_key(
                 content_key, target_lang, style
             )
-            if cache_key in self.config.translation_cache:
+            if self.use_cache and cache_key in self.config.translation_cache:
                 translated[content_key] = self.config.translation_cache[cache_key]
                 continue
             translated_text = self.translator.translate_text(
