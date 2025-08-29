@@ -8,6 +8,12 @@ A localization toolkit powered by Large Language Models (LLMs). It supports mult
 
 ## Changelog
 
+### v-0.1.0
+
+- Refactored project structure
+- Added automated testing support
+- Optimized package dependencies
+
 ### v-0.0.4
 
 - Added support for TongYi Qwen model, an optimized TongYi model specialized for machine translation.
@@ -37,13 +43,11 @@ A localization toolkit powered by Large Language Models (LLMs). It supports mult
 
 ## 📦 Dependencies
 
-```text
-PyYAML==6.0.1               # YAML parser
-volcenginesdkarkruntime==1.0.11  # Volcano Engine ARK SDK (optional if you don't use Doubao)
-```
+Use `pipenv` to install dependencies
 
 ```bash
-pip install pyyaml volcenginesdkarkruntime
+pipenv install
+pipenv run pip install volcengine-python-sdk[ark]  # Volcano Engine ARK SDK (optional if you don't use Doubao model)
 ```
 
 ## Example Config
@@ -120,36 +124,18 @@ In localization, languages are identified by ISO codes: two-letter (ISO 639-1) o
 ```text
 .
 ├── src/                     # Source code
-│   ├── __init__.py
-│   ├── core/                # Core module
-│   │   ├── __init__.py
-│   │   └── Localization.py  # Main logic
-│   └── translators/         # Translators
-│       ├── __init__.py
-│       ├── BaseTranslator.py        # Base class
-│       ├── DoubaoTranslator.py      # Doubao translator
-│       ├── OpenAIBaseedTranslator.py # OpenAI-compatible translator
-│       └── TongYiQwenTranslator.py  # TongYi Qwen translator
-├── configs/                  # Config files
-│   ├── doubao_config.yaml   # Doubao config
-│   ├── deepseek_config.yaml # DeepSeek config
-│   ├── tongyi_config.yaml   # TongYi config
-│   └── tongyi_qwen_config.yaml # TongYi Qwen MT config
-├── data/                     # Data
-│   └── test_data/
-│       └── test.json        # Sample source
-├── output/                   # Outputs
-│   ├── en.json              # English result
-│   └── translations.cache   # Translation cache
-├── tests/                    # Tests
-│   ├── test_config.yaml
-│   └── test_translators.py
-├── tools/                    # Tools
-│   ├── BunnyLocalization.py  # Excel to JSON
-│   └── json_to_csv.py       # JSON to CSV
-├── main.py                   # Entry
-├── Pipfile                   # Dependencies
-└── README.md                 # Docs
+│   ├── __init__.py         # Package initialization
+│   ├── core/               # Core module
+│   └── translators/        # Translators module
+├── configs/                 # Configuration files
+├── data/                    # Data directory
+├── output/                  # Generated files directory
+├── tests/                   # Test files directory
+├── tools/                   # Tool scripts directory
+├── main.py                 # Main entry file
+├── Pipfile                 # Dependency management file
+├── Readme.md               # Chinese documentation
+└── Readme.en.md            # English documentation
 ```
 
 ## Contributing
