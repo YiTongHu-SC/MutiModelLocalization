@@ -30,6 +30,7 @@ ENV/
 
 # IDE和编辑器
 .vscode/
+!.vscode/launch.json
 .idea/
 *.suo
 *.ntvs*
