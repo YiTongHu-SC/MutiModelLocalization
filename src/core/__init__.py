@@ -2,7 +2,4 @@
 
 from .Localization import LocalizationProcessor, TranslatorFactory
 
-__all__ = [
-    'LocalizationProcessor',
-    'TranslatorFactory'
-]
+__all__ = ["LocalizationProcessor", "TranslatorFactory"]

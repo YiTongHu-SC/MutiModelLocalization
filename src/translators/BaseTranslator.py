@@ -1,11 +1,12 @@
-import json
-from pathlib import Path
 import argparse
-from time import sleep
-from typing import Dict, Any
 import hashlib
-import yaml
+import json
 import time
+from pathlib import Path
+from time import sleep
+from typing import Any, Dict
+
+import yaml
 
 
 class LocalizationConfig:

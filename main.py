@@ -5,8 +5,8 @@ MultiModelLocalization 主入口文件
 基于大语言模型的本地化翻译工具
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # 添加src目录到Python路径

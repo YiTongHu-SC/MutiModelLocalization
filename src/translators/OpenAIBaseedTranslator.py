@@ -1,7 +1,8 @@
 import time
-from .BaseTranslator import LocalizationConfig
-from .BaseTranslator import BaseTranslator
+
 from openai import OpenAI
+
+from .BaseTranslator import BaseTranslator, LocalizationConfig
 
 
 class OpenAIBaseedTranslator(BaseTranslator):

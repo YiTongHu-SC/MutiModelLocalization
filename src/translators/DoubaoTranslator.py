@@ -1,7 +1,8 @@
-from .BaseTranslator import LocalizationConfig
-from .BaseTranslator import BaseTranslator
-from volcenginesdkarkruntime import Ark
 import time
+
+from volcenginesdkarkruntime import Ark
+
+from .BaseTranslator import BaseTranslator, LocalizationConfig
 
 
 class DoubaoTranslator(BaseTranslator):

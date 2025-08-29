@@ -1,10 +1,12 @@
-from typing import Dict, Any
-import pandas as pd
-import yaml
 import argparse
 import json
-import sys
 import os
+import sys
+from typing import Any, Dict
+
+import pandas as pd
+import yaml
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.core.Localization import *
 

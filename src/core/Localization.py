@@ -1,8 +1,8 @@
+import argparse
 import json
 from pathlib import Path
-import argparse
-from ..translators.BaseTranslator import LocalizationConfig
-from ..translators.BaseTranslator import BaseTranslator
+
+from ..translators.BaseTranslator import BaseTranslator, LocalizationConfig
 
 
 class TranslatorFactory:

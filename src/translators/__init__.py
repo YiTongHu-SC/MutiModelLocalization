@@ -6,9 +6,9 @@ from .OpenAIBaseedTranslator import OpenAIBaseedTranslator
 from .TongYiQwenTranslator import TongYiQwenTranslator
 
 __all__ = [
-    'BaseTranslator',
-    'LocalizationConfig',
-    'DoubaoTranslator',
-    'OpenAIBaseedTranslator',
-    'TongYiQwenTranslator'
+    "BaseTranslator",
+    "LocalizationConfig",
+    "DoubaoTranslator",
+    "OpenAIBaseedTranslator",
+    "TongYiQwenTranslator",
 ]
