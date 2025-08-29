@@ -3,7 +3,10 @@ import pandas as pd
 import yaml
 import argparse
 import json
-from Localization import *
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from src.core.Localization import *
 
 """
 BunnyLocalization.py 是一个基于多语言本地化工具的脚本，主要功能包括：

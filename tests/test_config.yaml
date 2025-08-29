@@ -1,0 +1,26 @@
+# 测试用配置文件
+model_type: Doubao
+model: "test-model"
+base_url: "https://test.api.com"
+api_key: "test-api-key"
+
+# 系统提示词
+system_prompt: "你是一个测试翻译助手"
+
+# 目标语言列表
+default_languages:
+  - en
+  - ja
+
+# 翻译缓存文件路径
+cache_path: tests/test_cache.json
+
+# 翻译风格
+translation_style: formal
+
+# API请求频率限制
+rate_limit: 1
+
+# 模型参数
+temperature: 0.1
+max_tokens: 100

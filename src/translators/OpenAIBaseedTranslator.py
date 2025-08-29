@@ -1,20 +1,20 @@
-from BaseTranslator import LocalizationConfig
-from BaseTranslator import BaseTranslator
-from volcenginesdkarkruntime import Ark
 import time
+from .BaseTranslator import LocalizationConfig
+from .BaseTranslator import BaseTranslator
+from openai import OpenAI
 
 
-class DoubaoTranslator(BaseTranslator):
+class OpenAIBaseedTranslator(BaseTranslator):
     """
-    豆包大模型
+    基于OpenAI SDK的大模型,支持DeepSeek、Kimi,等
     """
 
     def __init__(self, config: LocalizationConfig):
         super().__init__(config)
-        self.client = Ark(base_url=self.base_url, api_key=self.api_key)
+        self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
 
     def translate_text(
-        self, text: str, target_lang: str, style: str = "formal", comment: str = None
+        self, text: str, target_lang: str, style: str = None, comment: str = None
     ) -> str:
         super().translate_text(text, target_lang, style, comment)
         payload = {
@@ -22,12 +22,11 @@ class DoubaoTranslator(BaseTranslator):
             "messages": [
                 {
                     "role": "system",
-                    "content": self.config.get_config("system_prompt")
-                    + f" 翻译风格：{style}",
+                    "content": self.config.get_config("system_prompt"),
                 },
                 {
                     "role": "user",
-                    "content": f"基于注释内容：{comment}，将以下文本直接翻译为{target_lang}: {text}",
+                    "content": f"将以下文本直接翻译为{target_lang}: {text}",
                 },
             ],
             "temperature": self.temperature,
@@ -38,10 +37,9 @@ class DoubaoTranslator(BaseTranslator):
             completion = self.client.chat.completions.create(
                 model=payload["model"],
                 messages=payload["messages"],
-                # 开启推理会话应用层加密，访问 https://www.volcengine.com/docs/82379/1389905 了解更多
-                extra_headers={"x-is-encrypted": "true"},
                 max_tokens=payload["max_tokens"],
                 temperature=payload["temperature"],
+                stream=False,
             )
             self.last_request = time.time()
 

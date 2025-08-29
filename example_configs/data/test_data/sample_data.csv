@@ -1,0 +1,11 @@
+key,zh_CN,description
+welcome_message,欢迎使用多模型本地化工具,应用启动时的欢迎信息
+error_message,发生了一个错误,通用错误提示信息
+success_message,操作成功完成,操作成功时的提示信息
+loading_message,正在加载...,数据加载时的提示信息
+confirm_dialog,您确定要执行此操作吗？,确认对话框的提示文本
+cancel_button,取消,取消按钮的文本
+ok_button,确定,确认按钮的文本
+save_button,保存,保存按钮的文本
+delete_button,删除,删除按钮的文本
+edit_button,编辑,编辑按钮的文本

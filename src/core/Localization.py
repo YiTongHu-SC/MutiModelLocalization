@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 import argparse
-from BaseTranslator import LocalizationConfig
-from BaseTranslator import BaseTranslator
+from ..translators.BaseTranslator import LocalizationConfig
+from ..translators.BaseTranslator import BaseTranslator
 
 
 class TranslatorFactory:
@@ -22,23 +22,23 @@ class TranslatorFactory:
             raise ValueError(f"Unsupported model type: {model_type}")
 
         if model_type == "Doubao":
-            from DoubaoTranslator import DoubaoTranslator
+            from ..translators.DoubaoTranslator import DoubaoTranslator
 
             return DoubaoTranslator(config)
         elif model_type == "DeepSeek":
-            from OpenAIBaseedTranslator import OpenAIBaseedTranslator
+            from ..translators.OpenAIBaseedTranslator import OpenAIBaseedTranslator
 
             return OpenAIBaseedTranslator(config)
         elif model_type == "Kimi":
-            from OpenAIBaseedTranslator import OpenAIBaseedTranslator
+            from ..translators.OpenAIBaseedTranslator import OpenAIBaseedTranslator
 
             return OpenAIBaseedTranslator(config)
         elif model_type == "TongYi":
-            from OpenAIBaseedTranslator import OpenAIBaseedTranslator
+            from ..translators.OpenAIBaseedTranslator import OpenAIBaseedTranslator
 
             return OpenAIBaseedTranslator(config)
         elif model_type == "TongYiQwen":
-            from TongYiQwenTranslator import TongYiQwenTranslator
+            from ..translators.TongYiQwenTranslator import TongYiQwenTranslator
 
             return TongYiQwenTranslator(config)
         else:

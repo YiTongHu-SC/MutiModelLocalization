@@ -1,6 +1,6 @@
 import time
-from BaseTranslator import LocalizationConfig
-from BaseTranslator import BaseTranslator
+from .BaseTranslator import LocalizationConfig
+from .BaseTranslator import BaseTranslator
 from openai import OpenAI
 
 

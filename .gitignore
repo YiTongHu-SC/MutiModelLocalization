@@ -54,6 +54,6 @@ htmlcov/
 Thumbs.db
 
 # 用户自定义目录（根据你的项目需求添加）
-data/
-output/
-configs/
+/data/
+/output/
+/configs/

@@ -75,45 +75,75 @@ model_type: TongYiQwen # 通义Qewn机翻大模型
 ## 🚀 快速使用
 
 ```bash
-python Localization.py \
-  --source ./data/test.json \
-  --output ./localized_files \
+# 使用主入口文件
+python main.py \
+  --source ./data/test_data/test.json \
+  --output ./output \
+  --config ./configs/doubao_config.yaml
+
+# 或者直接运行核心模块
+python -m src.core.Localization \
+  --source ./data/test_data/test.json \
+  --output ./output \
   --config ./configs/doubao_config.yaml
 ```
 ## 多语言对照表
 在多语言本地化中，不同语言通常使用ISO语言代码进行标识，这些代码可以是两位字母代码（ISO 639-1）或三位字母代码（ISO 639-2）。以下是一些常见语言的英文缩写：
-| 语言                | 缩写     | 说明                                   |
-|---------------------|----------|----------------------------------------|
-| 中文（简体）        | zh-CN    | zh表示中文，CN表示中国。               |
-| 英语（美国）        | en-US    | en表示英语，US表示美国。               |
-| 英语（英国）        | en-GB    | en表示英语，GB表示英国。               |
-| 西班牙语            | es       | es表示西班牙语。                       |
-| 西班牙语（墨西哥）  | es-MX    | es表示西班牙语，MX表示墨西哥。         |
-| 法语                | fr       | fr表示法语。                           |
-| 法语（加拿大）      | fr-CA    | fr表示法语，CA表示加拿大。             |
-| 德语                | de       | de表示德语。                           |
-| 日语                | ja       | ja表示日语。                           |
-| 韩语                | ko       | ko表示韩语。                           |
-| 俄语                | ru       | ru表示俄语。                           |
-| 阿拉伯语            | ar       | ar表示阿拉伯语。                       |
-| 葡萄牙语            | pt       | pt表示葡萄牙语。                       |
-| 葡萄牙语（巴西）    | pt-BR    | pt表示葡萄牙语，BR表示巴西。           |
-| 意大利语            | it       | it表示意大利语。                       |
-| 荷兰语              | nl       | nl表示荷兰语。                         |
-| 印度尼西亚语        | id       | id表示印度尼西亚语。                   |
-| 土耳其语            | tr       | tr表示土耳其语。                       |
+| 语言               | 缩写  | 说明                           |
+| ------------------ | ----- | ------------------------------ |
+| 中文（简体）       | zh-CN | zh表示中文，CN表示中国。       |
+| 英语（美国）       | en-US | en表示英语，US表示美国。       |
+| 英语（英国）       | en-GB | en表示英语，GB表示英国。       |
+| 西班牙语           | es    | es表示西班牙语。               |
+| 西班牙语（墨西哥） | es-MX | es表示西班牙语，MX表示墨西哥。 |
+| 法语               | fr    | fr表示法语。                   |
+| 法语（加拿大）     | fr-CA | fr表示法语，CA表示加拿大。     |
+| 德语               | de    | de表示德语。                   |
+| 日语               | ja    | ja表示日语。                   |
+| 韩语               | ko    | ko表示韩语。                   |
+| 俄语               | ru    | ru表示俄语。                   |
+| 阿拉伯语           | ar    | ar表示阿拉伯语。               |
+| 葡萄牙语           | pt    | pt表示葡萄牙语。               |
+| 葡萄牙语（巴西）   | pt-BR | pt表示葡萄牙语，BR表示巴西。   |
+| 意大利语           | it    | it表示意大利语。               |
+| 荷兰语             | nl    | nl表示荷兰语。                 |
+| 印度尼西亚语       | id    | id表示印度尼西亚语。           |
+| 土耳其语           | tr    | tr表示土耳其语。               |
 ## 项目结构
 
 ```
 .
-├── data/                 # 源语言文件
-│   └── test.json         # 示例翻译源文件
-├── configs/              # 配置文件目录
-│   └── doubao_config.yaml # 豆包模型配置
-├── output/               # 生成文件目录
-│   ├── en.json          # 英文翻译结果
-│   └── translations.cache # 翻译缓存
-└── Localization.py       # 主程序
+├── src/                     # 源代码目录
+│   ├── __init__.py         # 包初始化文件
+│   ├── core/               # 核心模块
+│   │   ├── __init__.py
+│   │   └── Localization.py # 主要逻辑处理
+│   └── translators/        # 翻译器模块
+│       ├── __init__.py
+│       ├── BaseTranslator.py        # 基础翻译器
+│       ├── DoubaoTranslator.py      # 豆包翻译器
+│       ├── OpenAIBaseedTranslator.py # OpenAI兼容翻译器
+│       └── TongYiQwenTranslator.py  # 通义千问翻译器
+├── configs/                 # 配置文件目录
+│   ├── doubao_config.yaml  # 豆包模型配置
+│   ├── deepseek_config.yaml # DeepSeek模型配置
+│   ├── tongyi_config.yaml  # 通义千问配置
+│   └── tongyi_qwen_config.yaml # 通义千问机翻配置
+├── data/                    # 数据目录
+│   └── test_data/          # 测试数据
+│       └── test.json       # 示例翻译源文件
+├── output/                  # 生成文件目录
+│   ├── en.json             # 英文翻译结果
+│   └── translations.cache  # 翻译缓存
+├── tests/                   # 测试文件目录
+│   ├── test_config.yaml    # 测试配置
+│   └── test_translators.py # 翻译器测试
+├── tools/                   # 工具脚本目录
+│   ├── BunnyLocalization.py # Excel转JSON工具
+│   └── json_to_csv.py      # JSON转CSV工具
+├── main.py                  # 主入口文件
+├── Pipfile                  # 依赖管理文件
+└── README.md               # 项目说明文档
 ```
 
 ## 贡献
