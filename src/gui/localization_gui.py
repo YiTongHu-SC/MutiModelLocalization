@@ -1,15 +1,30 @@
 import sys
 import os
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
-                             QPushButton, QLabel, QFileDialog, QLineEdit,
-                             QComboBox, QHBoxLayout, QCheckBox, QTextEdit,
-                             QScrollArea, QGroupBox, QListWidget, QAbstractItemView)
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QPushButton,
+    QLabel,
+    QFileDialog,
+    QLineEdit,
+    QComboBox,
+    QHBoxLayout,
+    QCheckBox,
+    QTextEdit,
+    QScrollArea,
+    QGroupBox,
+    QListWidget,
+    QAbstractItemView,
+)
 from PySide6.QtCore import Qt, QMimeData
 from PySide6.QtGui import QDragEnterEvent, QDropEvent
 import yaml
 import os
 
 from src.core.Localization import LocalizationProcessor, LocalizationConfig
+
 
 class DropArea(QWidget):
     def __init__(self):
@@ -36,15 +51,16 @@ class DropArea(QWidget):
             self.filepath = files[0].toLocalFile()
             self.label.setText(f"已选择文件: {os.path.basename(self.filepath)}")
 
+
 class LocalizationGUI(QMainWindow):
     MODEL_TYPES = {
         "通义千问": "TongYiQwen",
         "通义": "TongYi",
         "豆包": "Doubao",
         "DeepSeek": "DeepSeek",
-        "Kimi": "Kimi"
+        "Kimi": "Kimi",
     }
-    
+
     LANGUAGES = {
         "简体中文": "zh-CN",
         "繁体中文": "zh-TW",
@@ -55,9 +71,9 @@ class LocalizationGUI(QMainWindow):
         "法语": "fr",
         "西班牙语": "es",
         "意大利语": "it",
-        "俄语": "ru"
+        "俄语": "ru",
     }
-    
+
     def __init__(self):
         super().__init__()
         self.config = {}
@@ -71,7 +87,7 @@ class LocalizationGUI(QMainWindow):
                 self.config = yaml.safe_load(f)
 
     def initUI(self):
-        self.setWindowTitle('本地化工具')
+        self.setWindowTitle("本地化工具")
         self.setGeometry(300, 300, 800, 600)
 
         # 创建主滚动区域
@@ -83,7 +99,7 @@ class LocalizationGUI(QMainWindow):
         # 文件选择区域
         file_group = QGroupBox("文件选择")
         file_layout = QVBoxLayout()
-        
+
         # 拖拽区域
         self.drop_area = DropArea()
         file_layout.addWidget(self.drop_area)
@@ -211,7 +227,7 @@ class LocalizationGUI(QMainWindow):
             "use_cache": self.use_cache.isChecked(),
             "cache_path": "output/translations.cache",
             "translation_style": "formal",
-            "target_languages": self.get_selected_languages()
+            "target_languages": self.get_selected_languages(),
         }
 
         # 处理系统提示词
@@ -228,7 +244,7 @@ class LocalizationGUI(QMainWindow):
         if not self.drop_area.filepath:
             print("请先选择源文件！")
             return
-        
+
         if not self.output_path.text():
             print("请选择输出目录！")
             return
@@ -240,7 +256,7 @@ class LocalizationGUI(QMainWindow):
         # 创建临时配置文件
         temp_config = self.create_config()
         temp_config_path = "configs/temp_config.yaml"
-        
+
         try:
             # 保存临时配置
             with open(temp_config_path, "w", encoding="utf-8") as f:
@@ -249,18 +265,21 @@ class LocalizationGUI(QMainWindow):
             # 创建本地化实例并运行
             config = LocalizationConfig(temp_config_path)
             processor = LocalizationProcessor(config)
-            
+
             # 执行本地化处理
             processor.generate_localization(
                 source_path=self.drop_area.filepath,
                 target_langs=self.get_selected_languages(),
                 output_dir=self.output_path.text(),
-                style="formal"
+                style="formal",
             )
             print("本地化完成！")
+
         except Exception as e:
             print(f"本地化过程出错: {str(e)}")
         finally:
+            config.save_cache()
+            print("缓存已保存。")
             # 清理临时配置文件
             if os.path.exists(temp_config_path):
                 os.remove(temp_config_path)
@@ -271,5 +290,6 @@ def main():
     window.show()
     sys.exit(app.exec())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

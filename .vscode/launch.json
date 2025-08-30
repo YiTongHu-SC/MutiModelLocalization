@@ -12,6 +12,21 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Debug Main Localization",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "--config",
+                "configs/tongyi_config.yaml",
+                "--source",
+                "data/data.json",
+                "--output",
+                "output"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Run Tests",
             "type": "debugpy",
             "request": "launch",
