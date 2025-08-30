@@ -1,0 +1,8 @@
+model_type: DeepSeek
+model: deepseek-chat
+base_url: https://api.deepseek.com
+translation_style: formal
+use_cache: true
+rate_limit: 3
+temperature: 1.3
+max_tokens: 1024

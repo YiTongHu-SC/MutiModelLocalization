@@ -1,0 +1,9 @@
+model_type: Doubao
+model: ep-20250218152350-4gk6m
+base_url: https://ark.cn-beijing.volces.com/api/v3
+translation_style: formal
+use_cache: true
+rate_limit: 3
+temperature: 0.1
+max_tokens: 1024
+system_prompt: 你是一名专业游戏本地化翻译员，翻译用户给出的文本，输出无额外内容，只输出一个候选；当用户给出注释时，注意注释内容；当翻译内容为空时，不进行翻译，输出也为空；

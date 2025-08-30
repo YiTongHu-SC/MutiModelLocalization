@@ -80,11 +80,36 @@ class LocalizationGUI(QMainWindow):
         self.load_config()
         self.initUI()
 
-    def load_config(self):
-        config_path = "configs/tongyi_config.yaml"
+    def load_config(self, model_type=None):
+        if model_type is None:
+            model_type = "TongYiQwen"  # 默认使用通义千问的配置
+            
+        # 根据模型类型确定配置文件名
+        config_filename = ""
+        match model_type:
+            case "TongYiQwen":
+                config_filename = "tongyi_qwen_config.yaml"
+            case "TongYi":
+                config_filename = "tongyi_config.yaml"
+            case "Doubao":
+                config_filename = "doubao_config.yaml"
+            case "DeepSeek":
+                config_filename = "deepseek_config.yaml"
+            case "Kimi":
+                config_filename = "kimi_config.yaml"
+
+        config_path = os.path.join("default", "configs", config_filename)
+        
+        # 如果默认配置目录不存在，使用主配置目录
+        if not os.path.exists(config_path):
+            config_path = os.path.join("configs", config_filename)
+            
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as f:
                 self.config = yaml.safe_load(f)
+        else:
+            # 如果配置文件不存在，使用空配置
+            self.config = {}
 
     def initUI(self):
         self.setWindowTitle("本地化工具")
@@ -203,8 +228,21 @@ class LocalizationGUI(QMainWindow):
                 item.setSelected(True)
 
     def on_model_changed(self, model_name):
-        # 这里可以根据选择的模型类型加载对应的默认配置
-        pass
+        # 获取选择的模型类型
+        model_type = self.MODEL_TYPES[model_name]
+        
+        # 加载对应的配置
+        self.load_config(model_type)
+        
+        # 更新界面上的配置值
+        self.model_name.setText(self.config.get("model", ""))
+        self.base_url.setText(self.config.get("base_url", ""))
+        self.api_key.setText(self.config.get("api_key", ""))
+        self.use_cache.setChecked(self.config.get("use_cache", True))
+        self.system_prompt.setText(self.config.get("system_prompt", ""))
+        
+        # 更新选中的语言
+        self.select_default_languages()
 
     def select_output_dir(self):
         dir_path = QFileDialog.getExistingDirectory(self, "选择输出目录")
@@ -225,7 +263,7 @@ class LocalizationGUI(QMainWindow):
             "base_url": self.base_url.text(),
             "api_key": self.api_key.text(),
             "use_cache": self.use_cache.isChecked(),
-            "cache_path": "output/translations.cache",
+            "cache_path": os.path.join(self.output_path.text(), "localization.cache"),
             "translation_style": "formal",
             "target_languages": self.get_selected_languages(),
         }
@@ -241,6 +279,10 @@ class LocalizationGUI(QMainWindow):
         return config
 
     def start_localization(self):
+        if not self.api_key.text():
+            print("需要API密钥！")
+            return
+
         if not self.drop_area.filepath:
             print("请先选择源文件！")
             return
@@ -283,6 +325,7 @@ class LocalizationGUI(QMainWindow):
             # 清理临时配置文件
             if os.path.exists(temp_config_path):
                 os.remove(temp_config_path)
+
 
 def main():
     app = QApplication(sys.argv)

@@ -1,0 +1,8 @@
+model_type: Kimi
+model: moonshot-v1-8k
+base_url: https://api.moonshot.cn/v1
+translation_style: formal
+use_cache: true
+rate_limit: 1
+temperature: 0.3
+max_tokens: 1024
