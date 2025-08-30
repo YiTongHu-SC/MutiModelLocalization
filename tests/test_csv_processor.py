@@ -1,6 +1,7 @@
 import unittest
 import os
 import json
+import csv
 from src.core.csv_processor import CSVProcessor
 
 class TestCSVProcessor(unittest.TestCase):
@@ -19,32 +20,39 @@ class TestCSVProcessor(unittest.TestCase):
         self.assertEqual(langs, ["en", "ja", "ko", "zh-TW"])
         
     def test_read_csv(self):
-        data = self.processor.read_csv(self.test_csv)
+        headers, rows = self.processor.read_csv(self.test_csv)
         
-        # 验证数据结构
-        self.assertIn("welcome", data)
-        self.assertIn("text", data["welcome"])
-        self.assertIn("comment", data["welcome"])
+        # 验证表头
+        self.assertIn("ID", headers)
+        self.assertIn("zh-CN", headers)
+        self.assertIn("Comment", headers)
         
-        # 验证内容
-        self.assertEqual(data["welcome"]["text"], "欢迎使用本地化工具")
-        self.assertEqual(data["welcome"]["comment"], "这是一个简单的欢迎语")
+        # 验证数据行
+        self.assertTrue(len(rows) > 0)
+        first_row = rows[0]
+        self.assertEqual(first_row[headers.index("ID")], "welcome")
+        self.assertEqual(first_row[headers.index("zh-CN")], "欢迎使用本地化工具")
         
     def test_process_file(self):
         # 处理文件
         self.processor.process_file(self.test_csv, self.output_dir)
         
         # 验证输出文件
-        output_file = os.path.join(self.output_dir, "zh-CN.json")
-        self.assertTrue(os.path.exists(output_file))
-        
-        # 验证输出内容
-        with open(output_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        for lang in ["en", "ja", "ko", "zh-TW"]:
+            output_file = os.path.join(self.output_dir, f"{lang}.csv")
+            self.assertTrue(os.path.exists(output_file))
             
-        self.assertIn("welcome", data)
-        self.assertEqual(data["welcome"]["text"], "欢迎使用本地化工具")
-        self.assertEqual(data["welcome"]["comment"], "这是一个简单的欢迎语")
+            # 验证输出内容
+            with open(output_file, 'r', encoding='utf-8') as f:
+                reader = csv.reader(f)
+                headers = next(reader)
+                rows = list(reader)
+                
+            # 验证表头和数据结构
+            self.assertEqual(headers[0], "ID")
+            self.assertIn(lang, headers)
+            self.assertIn("Comment", headers)
+            self.assertTrue(len(rows) > 0)  # 确保有数据行
 
 if __name__ == '__main__':
     unittest.main()

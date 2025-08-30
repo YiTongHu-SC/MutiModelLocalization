@@ -49,12 +49,11 @@ class CSVProcessor:
                 
         return target_langs, id_index, source_index, comment_index
     
-    def read_csv(self, file_path: str) -> Dict:
+    def read_csv(self, file_path: str) -> Tuple[List[str], List[List[str]]]:
         """
-        读取CSV文件并转换为标准的本地化数据格式
+        读取CSV文件并保留原始结构
+        返回：(表头列表, 数据行列表)
         """
-        result = {}
-        
         with open(file_path, 'r', encoding='utf-8') as f:
             reader = csv.reader(f)
             headers = next(reader)  # 读取表头
@@ -65,39 +64,36 @@ class CSVProcessor:
             if id_idx == -1 or source_idx == -1:
                 raise ValueError("CSV文件必须包含ID列和源语言列")
                 
-            # 读取每一行数据
+            # 保存所有行数据
+            rows = []
             for row in reader:
                 if not row or not row[id_idx].strip():  # 跳过空行或无ID的行
                     continue
-                    
-                item_id = row[id_idx].strip()
-                source_text = row[source_idx].strip() if source_idx < len(row) else ""
-                comment = row[comment_idx].strip() if comment_idx != -1 and comment_idx < len(row) else ""
+                rows.append(row)
                 
-                result[item_id] = {
-                    "text": source_text,
-                    "comment": comment
-                }
-                
-        return result
+        return headers, rows
     
     def process_file(self, csv_path: str, output_dir: str) -> None:
         """
-        处理CSV文件并生成JSON格式的本地化文件
+        处理CSV文件并生成包含所有语言的CSV文件
         """
         # 读取CSV文件
-        self.data = self.read_csv(csv_path)
+        headers, rows = self.read_csv(csv_path)
         
         # 创建输出目录
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
         
-        # 生成源语言JSON文件
-        source_file = output_path / f"{self.source_language}.json"
-        with open(source_file, 'w', encoding='utf-8') as f:
-            json.dump(self.data, f, ensure_ascii=False, indent=2)
-            
-        print(f"已生成源语言文件：{source_file}")
+        # 生成输出文件
+        output_file = output_path / "localization.csv"
+        with open(output_file, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            # 写入表头（保持原始表头不变）
+            writer.writerow(headers)
+            # 写入数据行（保持所有列不变）
+            writer.writerows(rows)
+        
+        print(f"处理完成！")
         print(f"检测到的目标语言：{', '.join(self.target_languages)}")
-        print(f"处理的记录数：{len(self.data)}")
-        print(f"输出目录：{output_path}")
+        print(f"处理的记录数：{len(rows)}")
+        print(f"输出文件：{output_file}")
