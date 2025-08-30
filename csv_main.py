@@ -7,10 +7,11 @@ def main():
     parser.add_argument('-s', '--source', required=True, help='源CSV文件路径')
     parser.add_argument('-o', '--output', required=True, help='输出目录')
     parser.add_argument('--source-language', default='zh-CN', help='源语言代码，默认为zh-CN')
+    parser.add_argument('--config', default='configs/tongyi_qwen_config.yaml', help='配置文件路径')
     
     args = parser.parse_args()
     
-    processor = CSVProcessor()
+    processor = CSVProcessor(args.config)
     processor.source_language = args.source_language
     
     try:
