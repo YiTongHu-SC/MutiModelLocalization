@@ -50,6 +50,7 @@ class LocalizationProcessor:
         self.config = config
         self.translator = TranslatorFactory.create_translator(config)
         self.use_cache = config.get_config("use_cache", False)
+        print("translator created:", self.translator.model)
 
     def _process_value(
         self, value: dict, target_lang: str, style: str, is_use_comment: bool

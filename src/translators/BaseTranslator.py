@@ -44,18 +44,19 @@ class LocalizationConfig:
 class BaseTranslator:
     def __init__(self, config: LocalizationConfig):
         self.config = config
-        self.use_cache = config.get_config("use_cache", False)
-        self.base_url = config.get_config("base_url")
-        self.api_key = config.get_config("api_key")
-        self.model = config.get_config("model")
-        self.rate_limit = config.get_config("rate_limit", 3)  # 限制API请求频率
-        self.temperature = config.get_config("temperature", 0.1)
+        self.use_cache: bool = config.get_config("use_cache", False)
+        self.base_url: str = config.get_config("base_url")
+        self.api_key: str = config.get_config("api_key")
+        self.model: str = config.get_config("model")
+        self.rate_limit: int = config.get_config("rate_limit", 3)  # 限制API请求频率
+        self.temperature: float = config.get_config("temperature", 0.1)
         self.max_tokens = config.get_config("max_tokens", 1024)
         self.default_style = config.get_config(
             "translation_style", "formal"
         )  # 默认风格
         self.last_request = 0
-        self.IsUseComment = True
+        self.IsUseComment: bool = True
+        print("BaseTranslator initialized:", self.model)
         pass
 
     def _generate_hash_key(self, text: str, target_lang: str, style: str) -> str:
