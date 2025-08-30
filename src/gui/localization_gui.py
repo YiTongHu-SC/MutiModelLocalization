@@ -74,16 +74,22 @@ class LocalizationGUI(QMainWindow):
         "俄语": "ru",
     }
 
+    # 反向映射，用于从配置中恢复UI状态
+    REVERSE_MODEL_TYPES = {v: k for k, v in MODEL_TYPES.items()}
+    REVERSE_LANGUAGES = {v: k for k, v in LANGUAGES.items()}
+
     def __init__(self):
         super().__init__()
         self.config = {}
+        self.ui_cache_path = os.path.join("default", "cache", "ui_settings.yaml")
         self.load_config()
+        self.load_ui_cache()
         self.initUI()
 
     def load_config(self, model_type=None):
         if model_type is None:
             model_type = "TongYiQwen"  # 默认使用通义千问的配置
-            
+
         # 根据模型类型确定配置文件名
         config_filename = ""
         match model_type:
@@ -99,17 +105,77 @@ class LocalizationGUI(QMainWindow):
                 config_filename = "kimi_config.yaml"
 
         config_path = os.path.join("default", "configs", config_filename)
-        
+
         # 如果默认配置目录不存在，使用主配置目录
         if not os.path.exists(config_path):
             config_path = os.path.join("configs", config_filename)
-            
+
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as f:
                 self.config = yaml.safe_load(f)
         else:
             # 如果配置文件不存在，使用空配置
             self.config = {}
+
+    def load_ui_cache(self):
+        """加载用户界面缓存设置"""
+        if os.path.exists(self.ui_cache_path):
+            try:
+                with open(self.ui_cache_path, "r", encoding="utf-8") as f:
+                    cached_settings = yaml.safe_load(f)
+
+                # 恢复缓存的设置
+                if cached_settings:
+                    # 恢复模型类型选择
+                    if "model_type" in cached_settings:
+                        model_type = cached_settings["model_type"]
+                        if model_type in self.REVERSE_MODEL_TYPES:
+                            self.config["model_type"] = model_type
+
+                    # 恢复其他设置
+                    self.config["model"] = cached_settings.get(
+                        "model", self.config.get("model", "")
+                    )
+                    self.config["base_url"] = cached_settings.get(
+                        "base_url", self.config.get("base_url", "")
+                    )
+                    self.config["api_key"] = cached_settings.get(
+                        "api_key", self.config.get("api_key", "")
+                    )
+                    self.config["use_cache"] = cached_settings.get(
+                        "use_cache", self.config.get("use_cache", True)
+                    )
+                    self.config["system_prompt"] = cached_settings.get(
+                        "system_prompt", self.config.get("system_prompt", "")
+                    )
+                    self.config["target_languages"] = cached_settings.get(
+                        "target_languages", self.config.get("target_languages", [])
+                    )
+                    self.config["output_dir"] = cached_settings.get("output_dir", "")
+            except Exception as e:
+                print(f"加载界面缓存失败: {str(e)}")
+
+    def save_ui_cache(self):
+        """保存用户界面设置到缓存"""
+        try:
+            # 创建要缓存的设置
+            cache_settings = {
+                "model_type": self.MODEL_TYPES[self.model_type.currentText()],
+                "model": self.model_name.text(),
+                "base_url": self.base_url.text(),
+                "api_key": self.api_key.text(),
+                "use_cache": self.use_cache.isChecked(),
+                "system_prompt": self.system_prompt.toPlainText(),
+                "target_languages": self.get_selected_languages(),
+                "output_dir": self.output_path.text(),
+            }
+
+            # 保存到文件
+            os.makedirs(os.path.dirname(self.ui_cache_path), exist_ok=True)
+            with open(self.ui_cache_path, "w", encoding="utf-8") as f:
+                yaml.dump(cache_settings, f, allow_unicode=True)
+        except Exception as e:
+            print(f"保存界面缓存失败: {str(e)}")
 
     def initUI(self):
         self.setWindowTitle("本地化工具")
@@ -120,6 +186,12 @@ class LocalizationGUI(QMainWindow):
         self.setCentralWidget(scroll)
         container = QWidget()
         main_layout = QVBoxLayout(container)
+
+        # 确保目录存在
+        os.makedirs(os.path.dirname(self.ui_cache_path), exist_ok=True)
+
+        # 在初始化UI组件之前应用缓存的设置
+        cached_model_type = self.config.get("model_type", "TongYiQwen")
 
         # 文件选择区域
         file_group = QGroupBox("文件选择")
@@ -215,6 +287,10 @@ class LocalizationGUI(QMainWindow):
         start_btn.clicked.connect(self.start_localization)
         main_layout.addWidget(start_btn)
 
+        # 恢复保存的输出目录
+        if self.config.get("output_dir"):
+            self.output_path.setText(self.config["output_dir"])
+
         # 设置滚动区域
         scroll.setWidget(container)
         scroll.setWidgetResizable(True)
@@ -230,17 +306,17 @@ class LocalizationGUI(QMainWindow):
     def on_model_changed(self, model_name):
         # 获取选择的模型类型
         model_type = self.MODEL_TYPES[model_name]
-        
+
         # 加载对应的配置
         self.load_config(model_type)
-        
+
         # 更新界面上的配置值
         self.model_name.setText(self.config.get("model", ""))
         self.base_url.setText(self.config.get("base_url", ""))
         self.api_key.setText(self.config.get("api_key", ""))
         self.use_cache.setChecked(self.config.get("use_cache", True))
         self.system_prompt.setText(self.config.get("system_prompt", ""))
-        
+
         # 更新选中的语言
         self.select_default_languages()
 
@@ -263,7 +339,7 @@ class LocalizationGUI(QMainWindow):
             "base_url": self.base_url.text(),
             "api_key": self.api_key.text(),
             "use_cache": self.use_cache.isChecked(),
-            "cache_path": os.path.join(self.output_path.text(), "localization.cache"),
+            "cache_path": os.path.join("default", "cache", "localization.cache"),
             "translation_style": "formal",
             "target_languages": self.get_selected_languages(),
         }
@@ -325,6 +401,11 @@ class LocalizationGUI(QMainWindow):
             # 清理临时配置文件
             if os.path.exists(temp_config_path):
                 os.remove(temp_config_path)
+
+    def closeEvent(self, event):
+        """窗口关闭时保存界面设置"""
+        self.save_ui_cache()
+        super().closeEvent(event)
 
 
 def main():
