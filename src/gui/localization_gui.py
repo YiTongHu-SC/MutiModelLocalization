@@ -81,7 +81,8 @@ class LocalizationGUI(QMainWindow):
     def __init__(self):
         super().__init__()
         self.config = {}
-        self.ui_cache_path = os.path.join("default", "cache", "ui_settings.yaml")
+        self.ui_cache_path = os.path.join("cache", "ui_settings.yaml")
+        self.localization_cache_path = os.path.join("cache", "localization.cache")
         self.load_config()
         self.load_ui_cache()
         self.initUI()
@@ -255,6 +256,12 @@ class LocalizationGUI(QMainWindow):
         self.use_cache = QCheckBox("启用缓存")
         self.use_cache.setChecked(self.config.get("use_cache", True))
         cache_layout.addWidget(self.use_cache)
+
+        # 添加清除缓存按钮
+        clear_cache_btn = QPushButton("清除缓存")
+        clear_cache_btn.clicked.connect(self.clear_cache)
+        cache_layout.addWidget(clear_cache_btn)
+
         model_layout.addLayout(cache_layout)
 
         # 系统提示词
@@ -339,7 +346,7 @@ class LocalizationGUI(QMainWindow):
             "base_url": self.base_url.text(),
             "api_key": self.api_key.text(),
             "use_cache": self.use_cache.isChecked(),
-            "cache_path": os.path.join("default", "cache", "localization.cache"),
+            "cache_path": self.localization_cache_path,
             "translation_style": "formal",
             "target_languages": self.get_selected_languages(),
         }
@@ -401,6 +408,18 @@ class LocalizationGUI(QMainWindow):
             # 清理临时配置文件
             if os.path.exists(temp_config_path):
                 os.remove(temp_config_path)
+
+    def clear_cache(self):
+        """清除本地化缓存文件"""
+        try:
+            if os.path.exists(self.localization_cache_path):
+                os.remove(self.localization_cache_path)
+                print("缓存已清除")
+            else:
+                print("没有找到缓存文件")
+
+        except Exception as e:
+            print(f"清除缓存失败: {str(e)}")
 
     def closeEvent(self, event):
         """窗口关闭时保存界面设置"""
