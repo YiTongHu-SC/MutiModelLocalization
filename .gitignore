@@ -59,3 +59,7 @@ Thumbs.db
 /output/
 /configs/
 /cache/
+/default/cache/
+*.cache
+translations.cache
+ui_settings.yaml
